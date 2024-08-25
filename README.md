@@ -1,5 +1,5 @@
 # simpleConfig
 
-simpleConfig is a C++ library written in C++17. The goal is to create a simple library that can manage a custom and simple config layout.
+simpleConfig aims to be a config parser that uses a custom format designed to be easy to learn and understand while also being easy to work with in code.
 
-Although this library is not directly in use, an example can be found on [my linux status bar project](https://github.com/jjoedev/mibar)
+sC uses zig to parse the config file
