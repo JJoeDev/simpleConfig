@@ -26,7 +26,7 @@ pub fn ParseFile(filename: []const u8, allocator: std.mem.Allocator) !KeyValue {
             const key = line[0..sep];
             const value = line[sep + 1..];
 
-            return KeyValue{.key = key, .value = value};
+            return KeyValue{.key = try allocator.dupe(u8, key), .value = try allocator.dupe(u8, value)};
         }
     }
 
