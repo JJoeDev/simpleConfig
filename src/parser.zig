@@ -5,13 +5,13 @@ const KeyValue = struct {
     value: []const u8,
 };
 
-pub fn ParseFile(filename: []const u8) !KeyValue {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
+pub fn ParseFile(filename: []const u8, allocator: std.mem.Allocator) !KeyValue {
+    // var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    // defer _ = gpa.deinit();
 
-    var allocator = gpa.allocator();
+    // var allocator = gpa.allocator();
 
-    const buff: []u8 = try readFile(&allocator, filename);
+    const buff: []u8 = try readFile(allocator, filename);
     defer allocator.free(buff);
 
     var lines = std.mem.split(u8, buff, "\n");
@@ -20,11 +20,11 @@ pub fn ParseFile(filename: []const u8) !KeyValue {
         if(line.len <= 0) continue;
         if(line[0] == '*') continue;
 
-        const seperator = std.mem.indexOf(u8, line, ":");
+        const seperator: ?usize = std.mem.indexOf(u8, line, ":");
 
-        if(seperator != null){
-            const key = line[0..seperator.?];
-            const value = line[seperator.? + 1..];
+        if(seperator) |sep| {
+            const key = line[0..sep];
+            const value = line[sep + 1..];
 
             return KeyValue{.key = key, .value = value};
         }
@@ -33,11 +33,11 @@ pub fn ParseFile(filename: []const u8) !KeyValue {
     return error.NoLines;
 }
 
-fn readFile(allocator: *std.mem.Allocator, filename: []const u8) ![]u8 {
+fn readFile(allocator: std.mem.Allocator, filename: []const u8) ![]u8 {
     const file = try std.fs.cwd().openFile(filename, .{});
     defer file.close();
 
     const stat = try file.stat();
-    const buff = try file.readToEndAlloc(allocator.*, stat.size);
+    const buff = try file.readToEndAlloc(allocator, stat.size);
     return buff;
 }
